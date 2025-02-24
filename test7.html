@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dados Meteorológicos e Ocorrências - Defesa Civil POA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC13UTbnQp__ewEYpnQusB7br_ShjphJ1I&callback=initMap"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .header img {
+            width: 120px;
+            max-width: 100%;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+        }
+        .header h1 {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+        .stats {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        .stats span {
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .cards {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 0;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .card {
+            flex: 0 0 280px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            scroll-snap-align: start;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 1.1em;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            word-wrap: break-word;
+        }
+        .card .highlight-data {
+            margin: 8px 0;
+            font-size: 1.3em;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        .card .temp { color: #ffd700; }
+        .card .precip { color: #00bfff; }
+        .card p {
+            margin: 6px 0;
+            font-size: 0.85em;
+            line-height: 1.3;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        canvas {
+            width: 100% !important;
+            height: 70px !important;
+            margin: 10px 0;
+        }
+        #map {
+            height: 350px;
+            width: 100%;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @media (max-width: 768px) {
+            .header img { width: 100px; }
+            .header h1 { font-size: 1.2em; }
+            .stats { font-size: 1em; }
+            .card { flex: 0 0 240px; padding: 12px; }
+            .card h3 { font-size: 1em; }
+            .card .highlight-data { font-size: 1.1em; }
+            .card p { font-size: 0.75em; }
+            canvas { height: 60px !important; }
+            #map { height: 300px; }
+        }
+        @media (max-width: 480px) {
+            body { padding: 5px; }
+            .container { padding: 5px; }
+            .header img { width: 80px; }
+            .header h1 { font-size: 1em; }
+            .stats { font-size: 0.9em; }
+            .cards { gap: 10px; }
+            .card { flex: 0 0 200px; padding: 10px; }
+            .card h3 { font-size: 0.9em; }
+            .card .highlight-data { font-size: 1em; }
+            .card p { font-size: 0.7em; }
+            canvas { height: 50px !important; }
+            #map { height: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="C:\Users\joao.zaltron\Desktop/dc.png" alt="Defesa Civil Porto Alegre">
+            <h1 id="dynamicTitle">Dados Meteorológicos e Ocorrências</h1>
+        </div>
+        <style>
+            .header img {
+                width: 20%; /* Aumenta a imagem para 150% do tamanho original */
+                height: auto; /* Mantém a proporção da imagem */
+            }
+        </style>
+        <div class="stats">
+            Total de Ocorrências no Mês: <span id="totalOccurrences">0</span>
+        </div>
+        <div class="cards" id="weatherCards"></div>
+        <div id="map"></div>
+    </div>
+
+    <script>
+        let weatherData = [
+            {Estação: "GUARUJÁ", "Temperatura (°C)": "27.9", "Precipitação (mm)": "0.0"},
+            {Estação: "ILHA DA PINTADA", "Temperatura (°C)": "29.5", "Precipitação (mm)": "0.0"},
+            {Estação: "ILHA DOS MARINHEIROS", "Temperatura (°C)": "28.6", "Precipitação (mm)": "0.0"},
+            {Estação: "LAMI", "Temperatura (°C)": "30.5", "Precipitação (mm)": "0.0"},
+            {Estação: "LOMBA DO SABÃO", "Temperatura (°C)": "30.9", "Precipitação (mm)": "0.0"},
+            {Estação: "PASSO DAS PEDRAS", "Temperatura (°C)": "30.3", "Precipitação (mm)": "0.0"},
+            {Estação: "RUA DA REPRESA", "Temperatura (°C)": "27.8", "Precipitação (mm)": "0.0"},
+            {Estação: "SARANDÍ | ASSIS BRASIL", "Temperatura (°C)": "28.8", "Precipitação (mm)": "0.0"},
+            {Estação: "SARANDÍ | NOVA BRASÍLIA", "Temperatura (°C)": "28.4", "Precipitação (mm)": "0.0"},
+            {Estação: "VILA FARRAPOS", "Temperatura (°C)": "28.5", "Precipitação (mm)": "0.0"}
+        ];
+
+        let occurrenceData = [];
+        let map, markersLayer;
+
+        const apiUrl = "https://e0o1b8ve03.execute-api.us-east-1.amazonaws.com/api/download-csv?contract_id=61898029-2a65-4789-93b3-d58be1898d93";
+        const baseUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeosHxelakpL8SWlqQp18ChdaHGHLpSgVxSw1_gMV-0a-EsSDcum4ltfimhhFEDg/pub?output=csv";
+        const apiKey = "AIzaSyC13UTbnQp__ewEYpnQusB7br_ShjphJ1I";
+
+        // Função para formatar a data atual (DD/MM/YYYY)
+        function getCurrentDate() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Função para processar CSV de ocorrências
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            console.log("Cabeçalhos do CSV de ocorrências:", headers);
+            return lines.slice(1).map(line => {
+                const values = line.split(',').map(v => v.trim());
+                return {
+                    Data: values[0] || '',
+                    Hora: values[1] || '',
+                    Solicitante: values[2] || '',
+                    Endereço: values[4] || '',
+                    Bairro: values[5] || '',
+                    Tipo: values[6] || '',
+                    Situação: values[7] || '',
+                    Prioridade: values[8] || ''
+                };
+            });
+        }
+
+        // Função para processar CSV meteorológico da API
+        function parseWeatherCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const headers = lines[1].split(',').map(h => h.trim());
+            console.log("Cabeçalhos do CSV meteorológico:", headers);
+
+            const stationData = {};
+            lines.slice(2).forEach(line => {
+                const values = line.split(',').map(v => v.trim());
+                const station = values[0] || '';
+                const type = values[1] || '';
+                const value = values[2] || 'N/A';
+
+                if (!stationData[station]) {
+                    stationData[station] = { Estação: station };
+                }
+                if (type === "Temperatura (°C)" || type === "Precipitação (mm)") {
+                    stationData[station][type] = value;
+                }
+            });
+
+            return Object.values(stationData).slice(0, 10);
+        }
+
+        // Função para buscar dados da API e atualizar
+        async function fetchWeatherData() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error("Erro ao buscar dados da API");
+                const csvText = await response.text();
+                weatherData = parseWeatherCSV(csvText);
+                updateWeatherCards();
+                console.log("Dados meteorológicos atualizados:", weatherData);
+            } catch (error) {
+                console.error("Erro ao buscar dados da API:", error);
+                console.log("Usando dados iniciais como fallback...");
+                updateWeatherCards();
+            }
+        }
+
+        // Função para georreferenciar endereços
+        async function geocodeAddress(address) {
+            const geocoder = new google.maps.Geocoder();
+            return new Promise((resolve) => {
+                geocoder.geocode({ address: address + ", Porto Alegre, RS, Brasil" }, (results, status) => {
+                    if (status === "OK" && results[0]) {
+                        const location = results[0].geometry.location;
+                        console.log(`Georreferenciado: ${address} -> Lat: ${location.lat()}, Lng: ${location.lng()}`);
+                        resolve({ Latitude: location.lat(), Longitude: location.lng() });
+                    } else {
+                        console.warn(`Geocoding falhou para: ${address}, status: ${status}`);
+                        resolve({ Latitude: -30.0331, Longitude: -51.2300 });
+                    }
+                });
+            });
+        }
+
+        // Carregar e processar dados do Google Sheets (ocorrências)
+        async function loadGoogleSheetData() {
+            try {
+                const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+                const response = await fetch(proxyUrl + baseUrl);
+                if (!response.ok) throw new Error("Erro ao carregar o Google Sheets");
+                const csvText = await response.text();
+                occurrenceData = parseCSV(csvText);
+                console.log("Ocorrências processadas:", occurrenceData);
+
+                // Total de ocorrências (total de linhas)
+                const totalOccurrences = occurrenceData.length;
+                document.getElementById('totalOccurrences').textContent = totalOccurrences;
+            } catch (error) {
+                console.error("Erro ao carregar dados do Google Sheets:", error);
+                console.log("Usando dados mock como fallback...");
+                occurrenceData = [
+                    {Data:"17/01/2025",Hora:"15:10",Solicitante:"N/A",Endereço:"SETIMO CEU - R LIBERAL - 1",Bairro:"N/A",Tipo:"DESTELHAMENTO",Situação:"N/A",Prioridade:"N/A"}
+                ];
+                document.getElementById('totalOccurrences').textContent = occurrenceData.length;
+            }
+
+            const geocodePromises = occurrenceData.map(async (data, index) => {
+                if (data.Endereço) {
+                    const coords = await geocodeAddress(data.Endereço);
+                    occurrenceData[index].Latitude = coords.Latitude;
+                    occurrenceData[index].Longitude = coords.Longitude;
+                } else {
+                    occurrenceData[index].Latitude = -30.0331;
+                    occurrenceData[index].Longitude = -51.2300;
+                    console.log(`Endereço ausente para ocorrência ${index}:`, data);
+                }
+            });
+
+            await Promise.all(geocodePromises);
+            console.log("Georreferenciamento concluído:", occurrenceData);
+
+            updateOccurrences();
+        }
+
+        // Função para atualizar os cards meteorológicos
+        function updateWeatherCards() {
+            const cardsContainer = document.getElementById('weatherCards');
+            cardsContainer.innerHTML = '';
+            weatherData.forEach((data, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.innerHTML = `
+                    <h3>${data.Estação || 'N/A'}</h3>
+                    <p class="highlight-data temp">Temp: ${data["Temperatura (°C)"] || 'N/A'} °C</p>
+                    <p class="highlight-data precip">Precip: ${data["Precipitação (mm)"] || 'N/A'} mm</p>
+                    <canvas id="chart-${index}"></canvas>
+                `;
+                cardsContainer.appendChild(card);
+
+                const ctx = document.getElementById(`chart-${index}`);
+                if (ctx) {
+                    new Chart(ctx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Temp (°C)', 'Precip (mm)'],
+                            datasets: [{
+                                label: 'Dados',
+                                data: [parseFloat(data["Temperatura (°C)"]) || 0, parseFloat(data["Precipitação (mm)"]) || 0],
+                                backgroundColor: ['rgba(255, 215, 0, 0.6)', 'rgba(0, 191, 255, 0.6)'],
+                                borderColor: ['rgba(255, 215, 0, 1)', 'rgba(0, 191, 255, 1)'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            scales: {
+                                x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#fff', font: { size: 10 } } },
+                                y: { ticks: { color: '#fff', font: { size: 10 } } }
+                            },
+                            plugins: { legend: { display: false }, title: { display: false } },
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+            });
+        }
+
+        // Função para atualizar o mapa
+        function updateOccurrences() {
+            updateMap();
+        }
+
+        // Ícone personalizado para marcadores
+        const customIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/2288/2288494.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+        });
+
+        // Função de callback para inicializar o mapa
+        function initMap() {
+            map = L.map('map').setView([-30.0331, -51.2300], 11);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+
+            loadGoogleSheetData();
+        }
+
+        // Função para atualizar o mapa
+        function updateMap() {
+            markersLayer.clearLayers();
+            console.log("Atualizando mapa com os seguintes dados:", occurrenceData);
+
+            occurrenceData.forEach((data, index) => {
+                if (data.Latitude && data.Longitude && !isNaN(data.Latitude) && !isNaN(data.Longitude)) {
+                    const marker = L.marker([parseFloat(data.Latitude), parseFloat(data.Longitude)], { icon: customIcon }).addTo(markersLayer);
+                    marker.bindPopup(`
+                        <b>${data.Endereço || 'Endereço não disponível'}</b><br>
+                        Tipo: ${data.Tipo || 'N/A'}<br>
+                        Bairro: ${data.Bairro || 'N/A'}<br>
+                        Data: ${data.Data || 'N/A'} ${data.Hora || ''}
+                    `);
+                    console.log(`Marcador adicionado para ${data.Endereço}: Lat ${data.Latitude}, Lng ${data.Longitude}`);
+                } else {
+                    console.warn(`Coordenadas inválidas para ocorrência ${index}:`, data);
+                }
+            });
+        }
+
+        // Inicializar e atualizar automaticamente os dados meteorológicos
+        window.onload = function() {
+            document.getElementById('dynamicTitle').textContent = `Dados Meteorológicos e Ocorrências - ${getCurrentDate()}`;
+            fetchWeatherData();
+            setInterval(fetchWeatherData, 300000); // Atualiza a cada 5 minutos
+        };
+    </script>
+</body>
+</html>
