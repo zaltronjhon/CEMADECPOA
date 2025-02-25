@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dados Meteorológicos e Ocorrências - Defesa Civil POA</title>
+    <title>CEMADEC - Centro de Monitoramento e Alerta - Defesa Civil POA</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -358,7 +358,7 @@
     <div class="container">
         <div class="header">
             <img src="dc.png" alt="Defesa Civil Porto Alegre">
-            <h1 id="dynamicTitle">Dados Meteorológicos e Ocorrências</h1>
+            <h1 id="dynamicTitle">CEMADEC - Centro de Monitoramento e Alerta</h1>
         </div>
         <div class="theme-buttons">
             <button class="theme-btn dark-btn" onclick="setTheme('dark')">Escuro</button>
@@ -594,7 +594,7 @@
         }
 
         window.onload = function() {
-            document.getElementById('dynamicTitle').textContent = `Dados Meteorológicos e Ocorrências - ${getCurrentDate()}`;
+            document.getElementById('dynamicTitle').textContent = `CEMADEC - Centro de Monitoramento e Alerta - ${getCurrentDate()}`;
             fetchWeatherData();
             setInterval(fetchWeatherData, 300000);
         };
