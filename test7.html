@@ -15,134 +15,342 @@
             box-sizing: border-box;
         }
         body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            font-family: 'Segoe UI', Arial, sans-serif;
-            color: #fff;
+            background: linear-gradient(135deg, #1a2a3f, #2a3b5a);
+            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            color: #e0e0e0;
             min-height: 100vh;
-            padding: 10px;
+            padding: 0;
             overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+            animation: fadeInBody 1s ease-in-out;
+        }
+        body.light-theme {
+            background: linear-gradient(135deg, #e0e7f5, #f0f4fa);
+            color: #333;
+        }
+        body.dc-theme {
+            background: linear-gradient(135deg, #003087, #001e5f); /* Azul escuro do logotipo */
+            color: #fff;
+        }
+        @keyframes fadeInBody {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .container {
             max-width: 100%;
+            width: 100%;
             margin: 0 auto;
-            padding: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 100vh;
         }
         .header {
             text-align: center;
-            margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.8s ease-out;
+        }
+        body.light-theme .header {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        body.dc-theme .header {
+            background: rgba(245, 166, 35, 0.1); /* Laranja do logotipo com transparência */
+            border: 1px solid rgba(245, 166, 35, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .header img {
-            width: 120px;
-            max-width: 100%;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+            width: 150px;
+            filter: brightness(1.2) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+            transition: transform 0.3s ease;
+        }
+        body.light-theme .header img {
+            filter: brightness(1) drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
+        }
+        body.dc-theme .header img {
+            filter: brightness(1.1) drop-shadow(0 0 10px rgba(245, 166, 35, 0.5));
+        }
+        .header img:hover {
+            transform: scale(1.1);
         }
         .header h1 {
-            font-size: 1.5em;
-            margin-top: 10px;
+            font-size: 2em;
+            margin-top: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        body.light-theme .header h1 {
+            text-shadow: none;
+            color: #333;
+        }
+        body.dc-theme .header h1 {
+            color: #f5a623; /* Laranja do logotipo */
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+        .theme-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .theme-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .dark-btn {
+            background: #2a3b5a;
+            color: #fff;
+        }
+        .dark-btn:hover {
+            background: #3b4e7a;
+            transform: translateY(-3px);
+        }
+        .light-btn {
+            background: #f0f4fa;
+            color: #333;
+        }
+        .light-btn:hover {
+            background: #ffffff;
+            transform: translateY(-3px);
+        }
+        .dc-btn {
+            background: linear-gradient(135deg, #003087, #f5a623); /* Azul e Laranja do logotipo */
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .dc-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+        .dc-btn:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+        .dc-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
         .stats {
             text-align: center;
-            font-size: 1.2em;
-            margin: 10px 0;
+            font-size: 1.3em;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: fadeInStats 1s ease-in-out 0.5s forwards;
+            opacity: 0;
+        }
+        body.light-theme .stats {
+            background: rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        body.dc-theme .stats {
+            background: rgba(245, 166, 35, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 48, 135, 0.2);
+        }
+        @keyframes fadeInStats {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .stats span {
-            font-weight: bold;
-            color: #ffd700;
+            font-weight: 700;
+            color: #ff6b6b;
+            text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+        }
+        body.light-theme .stats span {
+            color: #e63946;
+            text-shadow: none;
+        }
+        body.dc-theme .stats span {
+            color: #f5a623;
+            text-shadow: 0 0 5px rgba(245, 166, 35, 0.5);
         }
         .cards {
             display: flex;
             flex-wrap: nowrap;
             overflow-x: auto;
-            gap: 15px;
-            padding: 10px 0;
+            gap: 20px;
+            padding: 15px 0;
             scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            flex-grow: 1;
         }
         .card {
-            flex: 0 0 280px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 15px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease, background 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            flex: 0 0 300px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
             scroll-snap-align: start;
+            animation: cardPop 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        body.light-theme .card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        body.dc-theme .card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(245, 166, 35, 0.3);
+            box-shadow: 0 6px 25px rgba(0, 48, 135, 0.3);
+        }
+        @keyframes cardPop {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
         .card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+        }
+        body.light-theme .card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        body.dc-theme .card:hover {
+            background: rgba(245, 166, 35, 0.15);
+            box-shadow: 0 10px 35px rgba(0, 48, 135, 0.4);
         }
         .card h3 {
-            margin: 0 0 10px;
-            font-size: 1.1em;
+            margin: 0 0 15px;
+            font-size: 1.2em;
+            font-weight: 500;
+            color: #ffffff;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+        body.light-theme .card h3 {
+            color: #333;
+            text-shadow: none;
+        }
+        body.dc-theme .card h3 {
             color: #fff;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            word-wrap: break-word;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
         }
         .card .highlight-data {
-            margin: 8px 0;
-            font-size: 1.3em;
-            font-weight: bold;
+            margin: 10px 0;
+            font-size: 1.5em;
+            font-weight: 600;
             line-height: 1.2;
+            transition: transform 0.3s ease;
         }
-        .card .temp { color: #ffd700; }
-        .card .precip { color: #00bfff; }
+        .card:hover .highlight-data {
+            transform: scale(1.05);
+        }
+        .card .temp { color: #ff6b6b; }
+        .card .precip { color: #4ecdc4; }
+        body.light-theme .card .temp { color: #e63946; }
+        body.light-theme .card .precip { color: #1d3557; }
+        body.dc-theme .card .temp { color: #f5a623; } /* Laranja do logotipo */
+        body.dc-theme .card .precip { color: #00b7eb; } /* Azul claro complementar */
         .card p {
-            margin: 6px 0;
-            font-size: 0.85em;
-            line-height: 1.3;
+            margin: 8px 0;
+            font-size: 0.9em;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        body.light-theme .card p {
+            color: rgba(0, 0, 0, 0.75);
+        }
+        body.dc-theme .card p {
             color: rgba(255, 255, 255, 0.9);
         }
         canvas {
             width: 100% !important;
-            height: 70px !important;
-            margin: 10px 0;
+            height: 80px !important;
+            margin: 15px 0;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        body.light-theme canvas {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        body.dc-theme canvas {
+            background: rgba(245, 166, 35, 0.05);
         }
         #map {
-            height: 350px;
+            height: 400px;
             width: 100%;
-            margin: 20px 0;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeInMap 1s ease-in-out 0.8s forwards;
+            opacity: 0;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+        body.light-theme #map {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        body.dc-theme #map {
+            border: 1px solid rgba(245, 166, 35, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 48, 135, 0.3);
+        }
+        @keyframes fadeInMap {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .card {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
         @media (max-width: 768px) {
+            .header img { width: 120px; }
+            .header h1 { font-size: 1.5em; }
+            .stats { font-size: 1.1em; }
+            .card { flex: 0 0 260px; padding: 15px; }
+            .card h3 { font-size: 1.1em; }
+            .card .highlight-data { font-size: 1.3em; }
+            .card p { font-size: 0.85em; }
+            canvas { height: 70px !important; }
+            #map { height: 350px; }
+            .theme-btn { padding: 8px 15px; font-size: 0.8em; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
             .header img { width: 100px; }
             .header h1 { font-size: 1.2em; }
             .stats { font-size: 1em; }
-            .card { flex: 0 0 240px; padding: 12px; }
+            .cards { gap: 15px; }
+            .card { flex: 0 0 220px; padding: 12px; }
             .card h3 { font-size: 1em; }
-            .card .highlight-data { font-size: 1.1em; }
-            .card p { font-size: 0.75em; }
+            .card .highlight-data { font-size: 1.2em; }
+            .card p { font-size: 0.8em; }
             canvas { height: 60px !important; }
             #map { height: 300px; }
-        }
-        @media (max-width: 480px) {
-            body { padding: 5px; }
-            .container { padding: 5px; }
-            .header img { width: 80px; }
-            .header h1 { font-size: 1em; }
-            .stats { font-size: 0.9em; }
-            .cards { gap: 10px; }
-            .card { flex: 0 0 200px; padding: 10px; }
-            .card h3 { font-size: 0.9em; }
-            .card .highlight-data { font-size: 1em; }
-            .card p { font-size: 0.7em; }
-            canvas { height: 50px !important; }
-            #map { height: 250px; }
+            .theme-buttons { top: 10px; right: 10px; }
+            .theme-btn { padding: 6px 12px; font-size: 0.7em; }
         }
     </style>
 </head>
@@ -152,12 +360,11 @@
             <img src="C:\Users\joao.zaltron\Desktop/dc.png" alt="Defesa Civil Porto Alegre">
             <h1 id="dynamicTitle">Dados Meteorológicos e Ocorrências</h1>
         </div>
-        <style>
-            .header img {
-                width: 20%; /* Aumenta a imagem para 150% do tamanho original */
-                height: auto; /* Mantém a proporção da imagem */
-            }
-        </style>
+        <div class="theme-buttons">
+            <button class="theme-btn dark-btn" onclick="setTheme('dark')">Escuro</button>
+            <button class="theme-btn light-btn" onclick="setTheme('light')">Claro</button>
+            <button class="theme-btn dc-btn" onclick="setTheme('dc')">Defesa Civil</button>
+        </div>
         <div class="stats">
             Total de Ocorrências no Mês: <span id="totalOccurrences">0</span>
         </div>
@@ -186,7 +393,6 @@
         const baseUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeosHxelakpL8SWlqQp18ChdaHGHLpSgVxSw1_gMV-0a-EsSDcum4ltfimhhFEDg/pub?output=csv";
         const apiKey = "AIzaSyC13UTbnQp__ewEYpnQusB7br_ShjphJ1I";
 
-        // Função para formatar a data atual (DD/MM/YYYY)
         function getCurrentDate() {
             const today = new Date();
             const day = String(today.getDate()).padStart(2, '0');
@@ -195,11 +401,9 @@
             return `${day}/${month}/${year}`;
         }
 
-        // Função para processar CSV de ocorrências
         function parseCSV(csvText) {
             const lines = csvText.trim().split('\n');
             const headers = lines[0].split(',').map(h => h.trim());
-            console.log("Cabeçalhos do CSV de ocorrências:", headers);
             return lines.slice(1).map(line => {
                 const values = line.split(',').map(v => v.trim());
                 return {
@@ -215,19 +419,15 @@
             });
         }
 
-        // Função para processar CSV meteorológico da API
         function parseWeatherCSV(csvText) {
             const lines = csvText.trim().split('\n');
             const headers = lines[1].split(',').map(h => h.trim());
-            console.log("Cabeçalhos do CSV meteorológico:", headers);
-
             const stationData = {};
             lines.slice(2).forEach(line => {
                 const values = line.split(',').map(v => v.trim());
                 const station = values[0] || '';
                 const type = values[1] || '';
                 const value = values[2] || 'N/A';
-
                 if (!stationData[station]) {
                     stationData[station] = { Estação: station };
                 }
@@ -235,11 +435,9 @@
                     stationData[station][type] = value;
                 }
             });
-
             return Object.values(stationData).slice(0, 10);
         }
 
-        // Função para buscar dados da API e atualizar
         async function fetchWeatherData() {
             try {
                 const response = await fetch(apiUrl);
@@ -247,32 +445,26 @@
                 const csvText = await response.text();
                 weatherData = parseWeatherCSV(csvText);
                 updateWeatherCards();
-                console.log("Dados meteorológicos atualizados:", weatherData);
             } catch (error) {
                 console.error("Erro ao buscar dados da API:", error);
-                console.log("Usando dados iniciais como fallback...");
                 updateWeatherCards();
             }
         }
 
-        // Função para georreferenciar endereços
         async function geocodeAddress(address) {
             const geocoder = new google.maps.Geocoder();
             return new Promise((resolve) => {
                 geocoder.geocode({ address: address + ", Porto Alegre, RS, Brasil" }, (results, status) => {
                     if (status === "OK" && results[0]) {
                         const location = results[0].geometry.location;
-                        console.log(`Georreferenciado: ${address} -> Lat: ${location.lat()}, Lng: ${location.lng()}`);
                         resolve({ Latitude: location.lat(), Longitude: location.lng() });
                     } else {
-                        console.warn(`Geocoding falhou para: ${address}, status: ${status}`);
                         resolve({ Latitude: -30.0331, Longitude: -51.2300 });
                     }
                 });
             });
         }
 
-        // Carregar e processar dados do Google Sheets (ocorrências)
         async function loadGoogleSheetData() {
             try {
                 const proxyUrl = "https://cors-anywhere.herokuapp.com/";
@@ -280,17 +472,10 @@
                 if (!response.ok) throw new Error("Erro ao carregar o Google Sheets");
                 const csvText = await response.text();
                 occurrenceData = parseCSV(csvText);
-                console.log("Ocorrências processadas:", occurrenceData);
-
-                // Total de ocorrências (total de linhas)
-                const totalOccurrences = occurrenceData.length;
-                document.getElementById('totalOccurrences').textContent = totalOccurrences;
+                document.getElementById('totalOccurrences').textContent = occurrenceData.length;
             } catch (error) {
                 console.error("Erro ao carregar dados do Google Sheets:", error);
-                console.log("Usando dados mock como fallback...");
-                occurrenceData = [
-                    {Data:"17/01/2025",Hora:"15:10",Solicitante:"N/A",Endereço:"SETIMO CEU - R LIBERAL - 1",Bairro:"N/A",Tipo:"DESTELHAMENTO",Situação:"N/A",Prioridade:"N/A"}
-                ];
+                occurrenceData = [{Data:"17/01/2025",Hora:"15:10",Solicitante:"N/A",Endereço:"SETIMO CEU - R LIBERAL - 1",Bairro:"N/A",Tipo:"DESTELHAMENTO",Situação:"N/A",Prioridade:"N/A"}];
                 document.getElementById('totalOccurrences').textContent = occurrenceData.length;
             }
 
@@ -302,17 +487,13 @@
                 } else {
                     occurrenceData[index].Latitude = -30.0331;
                     occurrenceData[index].Longitude = -51.2300;
-                    console.log(`Endereço ausente para ocorrência ${index}:`, data);
                 }
             });
 
             await Promise.all(geocodePromises);
-            console.log("Georreferenciamento concluído:", occurrenceData);
-
             updateOccurrences();
         }
 
-        // Função para atualizar os cards meteorológicos
         function updateWeatherCards() {
             const cardsContainer = document.getElementById('weatherCards');
             cardsContainer.innerHTML = '';
@@ -330,6 +511,11 @@
 
                 const ctx = document.getElementById(`chart-${index}`);
                 if (ctx) {
+                    const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 100, 0);
+                    gradient.addColorStop(0, 'rgba(0, 191, 255, 0.6)');
+                    gradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.8)');
+                    gradient.addColorStop(1, 'rgba(255, 0, 0, 1)');
+
                     new Chart(ctx.getContext('2d'), {
                         type: 'bar',
                         data: {
@@ -337,55 +523,54 @@
                             datasets: [{
                                 label: 'Dados',
                                 data: [parseFloat(data["Temperatura (°C)"]) || 0, parseFloat(data["Precipitação (mm)"]) || 0],
-                                backgroundColor: ['rgba(255, 215, 0, 0.6)', 'rgba(0, 191, 255, 0.6)'],
-                                borderColor: ['rgba(255, 215, 0, 1)', 'rgba(0, 191, 255, 1)'],
-                                borderWidth: 1
+                                backgroundColor: [gradient, 'rgba(0, 191, 255, 0.6)'],
+                                borderColor: ['rgba(255, 0, 0, 1)', 'rgba(0, 191, 255, 1)'],
+                                borderWidth: 1,
+                                borderRadius: 5,
+                                barThickness: 20
                             }]
                         },
                         options: {
                             indexAxis: 'y',
                             scales: {
-                                x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#fff', font: { size: 10 } } },
-                                y: { ticks: { color: '#fff', font: { size: 10 } } }
+                                x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#e0e0e0', font: { size: 12 } } },
+                                y: { ticks: { color: '#e0e0e0', font: { size: 12 } } }
                             },
                             plugins: { legend: { display: false }, title: { display: false } },
                             responsive: true,
-                            maintainAspectRatio: false
+                            maintainAspectRatio: false,
+                            animation: {
+                                duration: 1000,
+                                easing: 'easeOutBounce'
+                            }
                         }
                     });
                 }
             });
         }
 
-        // Função para atualizar o mapa
         function updateOccurrences() {
             updateMap();
         }
 
-        // Ícone personalizado para marcadores
         const customIcon = L.icon({
             iconUrl: 'https://cdn-icons-png.flaticon.com/512/2288/2288494.png',
-            iconSize: [32, 32],
-            iconAnchor: [16, 32],
-            popupAnchor: [0, -32]
+            iconSize: [35, 35],
+            iconAnchor: [17, 35],
+            popupAnchor: [0, -35]
         });
 
-        // Função de callback para inicializar o mapa
         function initMap() {
             map = L.map('map').setView([-30.0331, -51.2300], 11);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
             markersLayer = L.layerGroup().addTo(map);
-
             loadGoogleSheetData();
         }
 
-        // Função para atualizar o mapa
         function updateMap() {
             markersLayer.clearLayers();
-            console.log("Atualizando mapa com os seguintes dados:", occurrenceData);
-
             occurrenceData.forEach((data, index) => {
                 if (data.Latitude && data.Longitude && !isNaN(data.Latitude) && !isNaN(data.Longitude)) {
                     const marker = L.marker([parseFloat(data.Latitude), parseFloat(data.Longitude)], { icon: customIcon }).addTo(markersLayer);
@@ -395,18 +580,23 @@
                         Bairro: ${data.Bairro || 'N/A'}<br>
                         Data: ${data.Data || 'N/A'} ${data.Hora || ''}
                     `);
-                    console.log(`Marcador adicionado para ${data.Endereço}: Lat ${data.Latitude}, Lng ${data.Longitude}`);
-                } else {
-                    console.warn(`Coordenadas inválidas para ocorrência ${index}:`, data);
                 }
             });
         }
 
-        // Inicializar e atualizar automaticamente os dados meteorológicos
+        function setTheme(theme) {
+            document.body.classList.remove('light-theme', 'dc-theme');
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+            } else if (theme === 'dc') {
+                document.body.classList.add('dc-theme');
+            }
+        }
+
         window.onload = function() {
             document.getElementById('dynamicTitle').textContent = `Dados Meteorológicos e Ocorrências - ${getCurrentDate()}`;
             fetchWeatherData();
-            setInterval(fetchWeatherData, 300000); // Atualiza a cada 5 minutos
+            setInterval(fetchWeatherData, 300000);
         };
     </script>
 </body>
