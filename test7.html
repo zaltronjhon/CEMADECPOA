@@ -536,13 +536,14 @@
             {Estação: "VILA FARRAPOS", "Temperatura (°C)": "28.5", "Precipitação (mm)": "0.0"}
         ];
 
-        let occurrenceData = [];
-        let map, markersLayer, geojsonLayer;
+         let occurrenceData = [];
+        let map, markersLayer;
 
         const apiUrl = "https://e0o1b8ve03.execute-api.us-east-1.amazonaws.com/api/download-csv?contract_id=61898029-2a65-4789-93b3-d58be1898d93";
-        const baseUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeosHxelakpL8SWlqQp18ChdaHGHLpSgVxSw1_gMV-0a-EsSDcum4ltfimhhFEDg/pub?output=csv";
+        const baseUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSqrLvPP1daHhh4HC0MWs1DxvJJJQw5hxrzPg5Yq3C2Q_Vk9sgiwQZAxXZ_NFGckQ/pub?output=csv";
         const apiKey = "AIzaSyC13UTbnQp__ewEYpnQusB7br_ShjphJ1I";
 
+        // Função para formatar a data atual (DD/MM/YYYY)
         function getCurrentDate() {
             const today = new Date();
             const day = String(today.getDate()).padStart(2, '0');
@@ -551,24 +552,24 @@
             return `${day}/${month}/${year}`;
         }
 
+        // Função para processar CSV de ocorrências
         function parseCSV(csvText) {
             const lines = csvText.trim().split('\n');
             const headers = lines[0].split(',').map(h => h.trim());
-            return lines.slice(1).map(line => {
+            console.log("Cabeçalhos do CSV de ocorrências:", headers);
+            return lines.slice(10).map(line => {
                 const values = line.split(',').map(v => v.trim());
                 return {
                     Data: values[0] || '',
                     Hora: values[1] || '',
-                    Solicitante: values[2] || '',
                     Endereço: values[4] || '',
                     Bairro: values[5] || '',
                     Tipo: values[6] || '',
-                    Situação: values[7] || '',
-                    Prioridade: values[8] || ''
+                    Situação: values[8] || '',
+                    Prioridade: values[9] || ''
                 };
             });
         }
-
         function parseWeatherCSV(csvText) {
             const lines = csvText.trim().split('\n');
             const headers = lines[1].split(',').map(h => h.trim());
