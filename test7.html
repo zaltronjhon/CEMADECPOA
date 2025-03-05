@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC13UTbnQp__ewEYpnQusB7br_ShjphJ1I&callback=initMap"></script>
     <style>
+        /* Seu CSS permanece inalterado */
         * {
             margin: 0;
             padding: 0;
@@ -536,7 +537,7 @@
             {Estação: "VILA FARRAPOS", "Temperatura (°C)": "28.5", "Precipitação (mm)": "0.0"}
         ];
 
-         let occurrenceData = [];
+        let occurrenceData = [];
         let map, markersLayer;
 
         const apiUrl = "https://e0o1b8ve03.execute-api.us-east-1.amazonaws.com/api/download-csv?contract_id=61898029-2a65-4789-93b3-d58be1898d93";
@@ -565,8 +566,8 @@
                     Endereço: values[4] || '',
                     Bairro: values[5] || '',
                     Tipo: values[6] || '',
-                    Situação: values[8] || '',
-                    Prioridade: values[9] || ''
+                    Situação: values[9] || '',
+                    Prioridade: values[10] || ''
                 };
             });
         }
@@ -704,8 +705,19 @@
             updateMap();
         }
 
-        const customIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/2288/2288494.png',
+        // Ícone padrão (removido, substituído por ícones específicos)
+        // const customIcon = L.icon({...});
+
+        // Novos ícones para "Aberta" (vermelho) e "Encerrada" (verde)
+        const openIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/252/252025.png', // Ícone vermelho
+            iconSize: [35, 35],
+            iconAnchor: [17, 35],
+            popupAnchor: [0, -35]
+        });
+
+        const closedIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/190/190411.png', // Ícone verde
             iconSize: [35, 35],
             iconAnchor: [17, 35],
             popupAnchor: [0, -35]
@@ -722,16 +734,20 @@
             loadGeoJSONData(); // Carrega os dados GeoJSON extras
         }
 
+        // Função updateMap ajustada para usar cores baseadas em "Situação"
         function updateMap() {
             markersLayer.clearLayers();
             occurrenceData.forEach((data, index) => {
                 if (data.Latitude && data.Longitude && !isNaN(data.Latitude) && !isNaN(data.Longitude)) {
-                    const marker = L.marker([parseFloat(data.Latitude), parseFloat(data.Longitude)], { icon: customIcon }).addTo(markersLayer);
+                    // Escolhe o ícone com base na situação: verde para "Encerrada", vermelho para "Aberta" ou outro
+                    const icon = (data.Situação && data.Situação.toLowerCase() === 'encerrada') ? closedIcon : openIcon;
+                    const marker = L.marker([parseFloat(data.Latitude), parseFloat(data.Longitude)], { icon: icon }).addTo(markersLayer);
                     marker.bindPopup(`
                         <b>${data.Endereço || 'Endereço não disponível'}</b><br>
                         Tipo: ${data.Tipo || 'N/A'}<br>
                         Bairro: ${data.Bairro || 'N/A'}<br>
-                        Data: ${data.Data || 'N/A'} ${data.Hora || ''}
+                        Data: ${data.Data || 'N/A'} ${data.Hora || ''}<br>
+                        Situação: ${data.Situação || 'N/A'}
                     `);
                 }
             });
@@ -780,5 +796,6 @@
             setInterval(fetchWeatherData, 300000);
         };
     </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91baf0154dba8bb8',t:'MTc0MTE5MTU5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
