@@ -537,13 +537,13 @@
             {Estação: "VILA FARRAPOS", "Temperatura (°C)": "28.5", "Precipitação (mm)": "0.0"}
         ];
 
-        let occurrenceData = [];
+         let occurrenceData = [];
         let map, markersLayer;
 
         const apiUrl = "https://e0o1b8ve03.execute-api.us-east-1.amazonaws.com/api/download-csv?contract_id=61898029-2a65-4789-93b3-d58be1898d93";
         const baseUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeosHxelakpL8SWlqQp18ChdaHGHLpSgVxSw1_gMV-0a-EsSDcum4ltfimhhFEDg/pub?output=csv";
         const apiKey = "AIzaSyC13UTbnQp__ewEYpnQusB7br_ShjphJ1I";
-        
+
         // Função para formatar a data atual (DD/MM/YYYY)
         function getCurrentDate() {
             const today = new Date();
